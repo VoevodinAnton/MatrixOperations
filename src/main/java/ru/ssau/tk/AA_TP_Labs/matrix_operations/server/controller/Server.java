@@ -1,7 +1,6 @@
 package ru.ssau.tk.AA_TP_Labs.matrix_operations.server.controller;
 
 import ru.ssau.tk.AA_TP_Labs.matrix_operations.library.Matrix;
-import ru.ssau.tk.AA_TP_Labs.matrix_operations.library.ResponseStatus;
 import ru.ssau.tk.AA_TP_Labs.matrix_operations.server.model.utils.Constants;
 
 import java.io.*;
@@ -31,11 +30,12 @@ public class Server {
             while(!socket.isClosed()){
                 System.out.println("Server reading from channel");
                 ArrayList<Matrix> matrices = (ArrayList<Matrix>) objIn.readObject();
+                if (matrices != null){
+                    Matrix matrixResult = Matrix.multiply(matrices.get(0), matrices.get(1));
 
-                Matrix matrixResult = Matrix.multiply(matrices.get(0), matrices.get(1));
-
-                objOut.writeObject(matrixResult);
-                objOut.flush();
+                    objOut.writeObject(matrixResult);
+                    objOut.flush();
+                }
             }
 
             objIn.close();

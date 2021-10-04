@@ -1,16 +1,21 @@
 package ru.ssau.tk.AA_TP_Labs.matrix_operations.library;
 
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 
-public class Matrix {
+public class Matrix implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 8690770746534916044L;
     private double[][] matrix;
 
     public Matrix(int row, int column) {
         this.matrix = new double[row][column];
     }
 
-    public Matrix(double[][] matrix){
+    public Matrix(double[][] matrix) {
         this.matrix = matrix;
     }
 
@@ -18,23 +23,23 @@ public class Matrix {
         return matrix;
     }
 
-    public int getNumberOfRows(){
+    public int getNumberOfRows() {
         return matrix.length;
     }
 
-    public int getNumberOfColumn(){
+    public int getNumberOfColumn() {
         return matrix[0].length;
     }
 
-    public double getValue(int row, int column){
+    public double getValue(int row, int column) {
         return matrix[row][column];
     }
 
-    public void updateValue(int row, int column, double value){
+    public void updateValue(int row, int column, double value) {
         matrix[row][column] = value;
     }
 
-    public static Matrix sum(Matrix a, Matrix b){
+    public static Matrix sum(Matrix a, Matrix b) {
         Matrix matrixResult = new Matrix(a.getNumberOfRows(), a.getNumberOfColumn());
         matrixResult.matrix = IntStream.range(0, a.matrix.length)
                 .mapToObj(r -> IntStream.range(0, a.matrix[r].length)
@@ -43,7 +48,7 @@ public class Matrix {
         return matrixResult;
     }
 
-    public static Matrix multiply(Matrix a, Matrix b){
+    public static Matrix multiply(Matrix a, Matrix b) {
         Matrix matrixResult = new Matrix(a.getNumberOfColumn(), a.getNumberOfRows());
 
         matrixResult.matrix = Arrays.stream(a.matrix)
@@ -59,7 +64,46 @@ public class Matrix {
         return matrixResult;
     }
 
-    public static void writeMatrixToFile(Matrix matrix){
+    public static void writeMatrixToFile(Matrix matrix) {
 
     }
+
+    public static Matrix readMatrixFromFile(File file) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(file));
+
+        List<String> lines = new ArrayList<>();
+        while (br.ready()) {
+            lines.add(br.readLine());
+        }
+        int matrixWidth = lines.get(0).split(" ").length;
+        int matrixHeight = lines.size();
+
+        double[][] matrix = new double[matrixHeight][matrixWidth];
+        Matrix matrixResult = new Matrix(matrix);
+
+        for (int i = 0; i < matrixHeight; i++) {
+            for (int j = 0; j < matrixWidth; j++) {
+                String[] line = lines.get(i).split(" ");
+                matrixResult.matrix[i][j] = Double.parseDouble(line[j]);
+
+            }
+        }
+
+        //for (int i = 0; i < matrixHeight; i++) {
+        // System.out.println(Arrays.toString(matrix[i]));
+        //}
+
+        return matrixResult;
+    }
+
+    public String toString() {
+        StringBuilder matrixToString = new StringBuilder();
+        for (int i = 0; i < this.getNumberOfRows(); i++) {
+            matrixToString.append(Arrays.toString(this.matrix[i]));
+            matrixToString.append("\n");
+        }
+
+        return matrixToString.toString();
+    }
+
 }
