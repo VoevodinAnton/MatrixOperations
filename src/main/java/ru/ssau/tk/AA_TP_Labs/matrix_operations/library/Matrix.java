@@ -58,14 +58,21 @@ public class Matrix implements Serializable {
                         .toArray())
                 .toArray(double[][]::new);
 
-        System.out.println(Arrays.stream(a.matrix)
-                .map(r -> IntStream.range(0, b.matrix[0].length)));
-
         return matrixResult;
     }
 
-    public static void writeMatrixToFile(Matrix matrix) {
+    public static void writeMatrixToFile(Matrix matrix, String path) throws IOException {
+        File file = new File(path);
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
 
+        for (int i = 0; i < matrix.getNumberOfRows(); i++) {
+            for (int j = 0; j < matrix.getNumberOfColumn(); j++) {
+                bw.write(String.valueOf(matrix.getValue(i, j)));
+                bw.write(" ");
+            }
+            bw.newLine();
+        }
+        bw.close();
     }
 
     public static Matrix readMatrixFromFile(File file) throws IOException {

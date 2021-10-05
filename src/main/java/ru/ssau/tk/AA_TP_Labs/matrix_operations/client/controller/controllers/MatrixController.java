@@ -29,12 +29,16 @@ public class MatrixController {
 
     @FXML
     public void initialize() {
+        calculateButton.setDisable(true);
+
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Resource File");
 
         final List<Matrix> matrices = new ArrayList<>();
 
         chooseFile.setOnAction(actionEvent -> {
+            fileChooser.setTitle("Open Resource File");
+            matrices.clear();
+
             List<File> selectedFiles = fileChooser.showOpenMultipleDialog((Stage) chooseFile.getScene().getWindow());
             System.out.println(selectedFiles.toString());
 
@@ -42,6 +46,7 @@ public class MatrixController {
             secondFile.setText(selectedFiles.get(1).getName());
 
             if (selectedFiles != null) {
+                calculateButton.setDisable(false);
                 try {
                     for (File file : selectedFiles) {
                         Matrix matrix = Matrix.readMatrixFromFile(file);
@@ -54,13 +59,24 @@ public class MatrixController {
         });
 
         calculateButton.setOnAction(actionEvent -> {
+            fileChooser.setTitle("Save");
             try {
                 MatrixClient.getInstance().sendMatrices(matrices.get(0), matrices.get(1));
                 Matrix matrixResult = MatrixClient.getInstance().getMatrix();
+
                 System.out.println(matrixResult);
+
+                File saveFile = fileChooser.showSaveDialog((Stage) calculateButton.getScene().getWindow());
+                fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+                System.out.println(saveFile.getPath());
+
+                Matrix.writeMatrixToFile(matrixResult, saveFile.getPath());
+
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         });
+
     }
 }

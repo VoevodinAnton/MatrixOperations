@@ -11,6 +11,5 @@ public class MainClient {
         } catch (IOException e){
             e.printStackTrace();
         }
-
     }
 }
