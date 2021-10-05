@@ -32,6 +32,7 @@ public class MatrixController {
         calculateButton.setDisable(true);
 
         FileChooser fileChooser = new FileChooser();
+        configureFileChooser(fileChooser);
 
         final List<Matrix> matrices = new ArrayList<>();
 
@@ -40,12 +41,13 @@ public class MatrixController {
             matrices.clear();
 
             List<File> selectedFiles = fileChooser.showOpenMultipleDialog((Stage) chooseFile.getScene().getWindow());
-            System.out.println(selectedFiles.toString());
-
-            firstFile.setText(selectedFiles.get(0).getName());
-            secondFile.setText(selectedFiles.get(1).getName());
 
             if (selectedFiles != null) {
+                System.out.println(selectedFiles.toString());
+
+                firstFile.setText(selectedFiles.get(0).getName());
+                secondFile.setText(selectedFiles.get(1).getName());
+
                 calculateButton.setDisable(false);
                 try {
                     for (File file : selectedFiles) {
@@ -67,16 +69,27 @@ public class MatrixController {
                 System.out.println(matrixResult);
 
                 File saveFile = fileChooser.showSaveDialog((Stage) calculateButton.getScene().getWindow());
-                fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
 
-                System.out.println(saveFile.getPath());
+                if (saveFile != null){
+                    System.out.println(saveFile.getPath());
 
-                Matrix.writeMatrixToFile(matrixResult, saveFile.getPath());
-
+                    Matrix.writeMatrixToFile(matrixResult, saveFile.getPath());
+                }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         });
 
+    }
+
+    private void configureFileChooser(FileChooser fileChooser){
+        FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extentionFilter);
+
+        File userDirectory = new File("matrices");
+        if (!userDirectory.canRead()) {
+            userDirectory = new File("c:/");
+        }
+        fileChooser.setInitialDirectory(userDirectory);
     }
 }

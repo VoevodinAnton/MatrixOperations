@@ -13,7 +13,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        scene = new Scene(loadFXML("/FXML/ipInputFrame.fxml"), 500, 280);
+        scene = new Scene(loadFXML("/FXML/ipInputFrame.fxml"), -1, 300 );
         stage.setScene(scene);
         stage.show();
     }
