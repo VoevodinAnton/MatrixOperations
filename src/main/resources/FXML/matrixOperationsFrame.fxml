@@ -13,5 +13,6 @@
       <Button fx:id="calculateButton" layoutX="148.0" layoutY="131.0" mnemonicParsing="false" style="-fx-text-fill: white; -fx-padding: 14px 28px; -fx-font-size: 16px; -fx-cursor: hand; -fx-background-color: #04AA6D;" text="Вычислить" />
       <Label fx:id="firstFile" layoutX="298.0" layoutY="48.0" />
       <Label fx:id="secondFile" layoutX="298.0" layoutY="75.0" />
+      <Label fx:id="errorLabel" layoutX="27.0" layoutY="21.0" textFill="RED" />
    </children>
 </AnchorPane>

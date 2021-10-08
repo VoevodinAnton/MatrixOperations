@@ -28,6 +28,9 @@ public class MatrixController {
     public Label secondFile;
 
     @FXML
+    public Label errorLabel;
+
+    @FXML
     public void initialize() {
         calculateButton.setDisable(true);
 
@@ -42,27 +45,36 @@ public class MatrixController {
 
             List<File> selectedFiles = fileChooser.showOpenMultipleDialog((Stage) chooseFile.getScene().getWindow());
 
-            if (selectedFiles != null) {
-                System.out.println(selectedFiles.toString());
+            errorLabel.setText(" ");
+            if (!numberOfMatricesIsTwo(selectedFiles)){
+                return;
+            }
 
-                firstFile.setText(selectedFiles.get(0).getName());
-                secondFile.setText(selectedFiles.get(1).getName());
+            System.out.println(selectedFiles.toString());
 
-                calculateButton.setDisable(false);
-                try {
-                    for (File file : selectedFiles) {
-                        Matrix matrix = Matrix.readMatrixFromFile(file);
-                        matrices.add(matrix);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+            firstFile.setText(selectedFiles.get(0).getName());
+            secondFile.setText(selectedFiles.get(1).getName());
+
+            calculateButton.setDisable(false);
+            try {
+                for (File file : selectedFiles) {
+                    Matrix matrix = Matrix.readMatrixFromFile(file);
+                    matrices.add(matrix);
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
 
         calculateButton.setOnAction(actionEvent -> {
             fileChooser.setTitle("Save");
             try {
+
+                errorLabel.setText(" ");
+                if(!matricesAreMultiplied(matrices)){
+                    return;
+                }
+
                 MatrixClient.getInstance().sendMatrices(matrices.get(0), matrices.get(1));
                 Matrix matrixResult = MatrixClient.getInstance().getMatrix();
 
@@ -70,7 +82,7 @@ public class MatrixController {
 
                 File saveFile = fileChooser.showSaveDialog((Stage) calculateButton.getScene().getWindow());
 
-                if (saveFile != null){
+                if (saveFile != null) {
                     System.out.println(saveFile.getPath());
 
                     Matrix.writeMatrixToFile(matrixResult, saveFile.getPath());
@@ -82,7 +94,7 @@ public class MatrixController {
 
     }
 
-    private void configureFileChooser(FileChooser fileChooser){
+    private void configureFileChooser(FileChooser fileChooser) {
         FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");
         fileChooser.getExtensionFilters().add(extentionFilter);
 
@@ -91,5 +103,21 @@ public class MatrixController {
             userDirectory = new File("c:/");
         }
         fileChooser.setInitialDirectory(userDirectory);
+    }
+
+    private boolean numberOfMatricesIsTwo(List<File> selectedFiles) {
+        if (selectedFiles.size() != 2) {
+            errorLabel.setText("Выберите две матрицы");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean matricesAreMultiplied(List<Matrix> matrices) {
+        if (matrices.get(0).getNumberOfColumn() != matrices.get(1).getNumberOfRows()) {
+            errorLabel.setText("Матрицы нельзя перемножить");
+            return false;
+        }
+        return true;
     }
 }

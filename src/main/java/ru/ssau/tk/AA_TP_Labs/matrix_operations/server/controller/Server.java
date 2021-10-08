@@ -25,12 +25,14 @@ public class Server {
 
             while (true) {
                 Socket socket = serverSocket.accept();
+
+                ObjectInputStream objIn = new ObjectInputStream(socket.getInputStream());
+                ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
+
                 while (!socket.isClosed()) {
                     System.out.println("Server reading from channel");
 
-                    try (ObjectInputStream objIn = new ObjectInputStream(socket.getInputStream());
-                         ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());) {
-
+                    try {
                         ArrayList<Matrix> matrices = (ArrayList<Matrix>) objIn.readObject();
                         if (matrices != null) {
                             Matrix matrixResult = Matrix.multiply(matrices.get(0), matrices.get(1));
@@ -40,6 +42,7 @@ public class Server {
                         }
                     } catch (SocketException ex) {
                         System.err.println("connection reset");
+                        break;
                     }
                 }
                 socket.close();
